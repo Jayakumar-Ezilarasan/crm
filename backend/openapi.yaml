@@ -1,0 +1,359 @@
+openapi: 3.0.3
+info:
+  title: CRM API
+  version: 1.0.0
+  description: REST API for CRM system (users, customers, interactions, leads, tasks, reports)
+servers:
+  - url: http://localhost:4000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        email: { type: string }
+        name: { type: string }
+        role: { type: string }
+    Customer:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        company: { type: string }
+        address: { type: string }
+        owner_id: { type: integer }
+        category_id: { type: integer }
+    Interaction:
+      type: object
+      properties:
+        id: { type: integer }
+        customer_id: { type: integer }
+        user_id: { type: integer }
+        type: { type: string }
+        summary: { type: string }
+        interaction_date: { type: string, format: date-time }
+    Lead:
+      type: object
+      properties:
+        id: { type: integer }
+        customer_id: { type: integer }
+        category_id: { type: integer }
+        stage: { type: string }
+        value: { type: number }
+        source: { type: string }
+    Task:
+      type: object
+      properties:
+        id: { type: integer }
+        user_id: { type: integer }
+        customer_id: { type: integer }
+        lead_id: { type: integer }
+        category_id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        due_date: { type: string, format: date-time }
+        completed: { type: boolean }
+    ApiResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        data: { }
+        error: { type: string }
+security:
+  - bearerAuth: []
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+                name: { type: string }
+      responses:
+        '201': { description: User registered }
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: Login successful }
+  /auth/logout:
+    post:
+      summary: Logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200': { description: Logout successful }
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200': { description: Token refreshed }
+  /auth/password/request:
+    post:
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+      responses:
+        '200': { description: Reset token sent }
+  /auth/password/reset:
+    post:
+      summary: Reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: Password reset }
+  /api/customers:
+    get:
+      summary: List customers
+      responses:
+        '200': { description: List of customers }
+    post:
+      summary: Create customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201': { description: Customer created }
+  /api/customers/{id}:
+    get:
+      summary: Get customer by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Customer found }
+    put:
+      summary: Update customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200': { description: Customer updated }
+    delete:
+      summary: Delete customer
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Customer deleted }
+  /api/interactions:
+    get:
+      summary: List interactions
+      responses:
+        '200': { description: List of interactions }
+    post:
+      summary: Create interaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Interaction'
+      responses:
+        '201': { description: Interaction created }
+  /api/interactions/{id}:
+    get:
+      summary: Get interaction by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Interaction found }
+    put:
+      summary: Update interaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Interaction'
+      responses:
+        '200': { description: Interaction updated }
+    delete:
+      summary: Delete interaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Interaction deleted }
+  /api/leads:
+    get:
+      summary: List leads
+      responses:
+        '200': { description: List of leads }
+    post:
+      summary: Create lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lead'
+      responses:
+        '201': { description: Lead created }
+  /api/leads/{id}:
+    get:
+      summary: Get lead by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Lead found }
+    put:
+      summary: Update lead
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lead'
+      responses:
+        '200': { description: Lead updated }
+    delete:
+      summary: Delete lead
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Lead deleted }
+  /api/tasks:
+    get:
+      summary: List tasks
+      responses:
+        '200': { description: List of tasks }
+    post:
+      summary: Create task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201': { description: Task created }
+  /api/tasks/{id}:
+    get:
+      summary: Get task by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Task found }
+    put:
+      summary: Update task
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200': { description: Task updated }
+    delete:
+      summary: Delete task
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Task deleted }
+  /api/reports/customer-acquisition:
+    get:
+      summary: Customer acquisition report
+      responses:
+        '200': { description: Customer acquisition data }
+  /api/reports/sales-conversion:
+    get:
+      summary: Sales conversion report
+      responses:
+        '200': { description: Sales conversion data } 

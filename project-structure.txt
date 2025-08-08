@@ -1,0 +1,37 @@
+crm-system/
+├── frontend/                # Next.js (TypeScript) app
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── styles/
+│   │   ├── utils/
+│   │   └── types/
+│   ├── .env.local
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── next.config.js
+│   ├── .eslintrc.js
+│   └── .prettierrc
+├── backend/                 # Express (TypeScript) API
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── index.ts
+│   ├── prisma/
+│   │   ├── schema.prisma
+│   │   └── migrations/
+│   ├── .env
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── .eslintrc.js
+│   └── .prettierrc
+├── docker-compose.yml       # Local dev orchestration
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml        # GitHub Actions workflow
+└── README.md 

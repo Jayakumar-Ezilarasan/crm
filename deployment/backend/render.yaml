@@ -1,0 +1,55 @@
+services:
+  - type: web
+    name: crm-backend
+    env: node
+    plan: starter  # Upgrade from free for better performance
+    region: oregon  # Choose closest region
+    buildCommand: |
+      npm ci --only=production
+      npm run build
+      npx prisma generate
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://your-frontend-domain.vercel.app
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: LOG_LEVEL
+        value: info
+    healthCheckPath: /api/health
+    autoDeploy: true
+    branch: main
+    numInstances: 1
+    disk:
+      name: crm-backend-disk
+      mountPath: /app/uploads
+      sizeGB: 1
+
+  - type: pserv
+    name: crm-postgres
+    env: postgresql
+    plan: starter
+    region: oregon
+    ipAllowList: []
+    maxConnections: 100
+    maintenanceWindow: sunday-02-00
+    envVars:
+      - key: POSTGRES_DB
+        value: crm_production
+      - key: POSTGRES_USER
+        value: crm_user
+      - key: POSTGRES_PASSWORD
+        sync: false
+

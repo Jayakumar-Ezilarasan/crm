@@ -1,0 +1,29 @@
+src/
+  app/                  # App Router pages and layouts
+    layout.tsx          # Root layout
+    page.tsx            # Home/dashboard
+    login/page.tsx      # Login page
+    register/page.tsx   # Register page
+    customers/          # Customers CRUD
+    leads/              # Leads CRUD
+    tasks/              # Tasks CRUD
+    interactions/       # Interactions CRUD
+    reports/            # Reports/analytics
+  components/           # Reusable UI components
+    ui/                 # Button, Input, Card, etc.
+    Navbar.tsx
+    Sidebar.tsx
+    AuthProvider.tsx    # Auth context/provider
+    ProtectedRoute.tsx  # Route guard
+  hooks/                # Custom hooks (useAuth, useApi, etc.)
+  store/                # Zustand stores
+  lib/                  # API client (axios), helpers
+  types/                # TypeScript interfaces/models
+  styles/               # Tailwind and global styles
+public/
+tailwind.config.js
+postcss.config.js
+tsconfig.json
+.eslintrc.js
+.prettierrc
+.env.local 

@@ -1,0 +1,198 @@
+name: Deploy CRM System
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Test and Build
+  test-and-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: backend
+            path: ./backend
+            test-command: npm test
+            build-command: npm run build
+          - name: frontend
+            path: ./frontend
+            test-command: npm test
+            build-command: npm run build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: ${{ matrix.path }}/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd ${{ matrix.path }}
+        npm ci
+
+    - name: Run tests
+      run: |
+        cd ${{ matrix.path }}
+        ${{ matrix.test-command }}
+
+    - name: Build application
+      run: |
+        cd ${{ matrix.path }}
+        ${{ matrix.build-command }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.name }}-build
+        path: ${{ matrix.path }}/dist
+
+  # Security Scan
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test-and-build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Deploy to Staging
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [test-and-build, security-scan]
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment: staging
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy Backend to Render (Staging)
+      uses: johnbeynon/render-deploy-action@v1.0.0
+      with:
+        service-id: ${{ secrets.RENDER_STAGING_BACKEND_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+
+    - name: Deploy Frontend to Vercel (Staging)
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_STAGING_PROJECT_ID }}
+        working-directory: ./frontend
+        vercel-args: '--prod'
+
+    - name: Run E2E Tests (Staging)
+      run: |
+        npm install -g @playwright/test
+        npx playwright install
+        npx playwright test --config=e2e/playwright.config.ts
+
+  # Deploy to Production
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [test-and-build, security-scan]
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    environment: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy Backend to Render (Production)
+      uses: johnbeynon/render-deploy-action@v1.0.0
+      with:
+        service-id: ${{ secrets.RENDER_PRODUCTION_BACKEND_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+
+    - name: Deploy Frontend to Vercel (Production)
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PRODUCTION_PROJECT_ID }}
+        working-directory: ./frontend
+        vercel-args: '--prod'
+
+    - name: Run Database Migrations
+      run: |
+        cd backend
+        npm install
+        npx prisma migrate deploy
+
+    - name: Run E2E Tests (Production)
+      run: |
+        npm install -g @playwright/test
+        npx playwright install
+        npx playwright test --config=e2e/playwright.config.ts
+
+    - name: Notify Deployment Success
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        text: '🚀 CRM System deployed to production successfully!'
+
+  # Rollback (Manual)
+  rollback:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'rollback'
+    environment: production
+
+    steps:
+    - name: Rollback Backend
+      uses: johnbeynon/render-deploy-action@v1.0.0
+      with:
+        service-id: ${{ secrets.RENDER_PRODUCTION_BACKEND_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+        rollback: true
+
+    - name: Rollback Frontend
+      run: |
+        # Rollback to previous Vercel deployment
+        curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          "https://api.vercel.com/v1/deployments/${{ secrets.VERCEL_PREVIOUS_DEPLOYMENT_ID }}/rollback"
+
+    - name: Notify Rollback
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        text: '🔄 CRM System rolled back successfully!'
+

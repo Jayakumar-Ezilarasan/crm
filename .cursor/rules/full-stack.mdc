@@ -1,0 +1,400 @@
+# Full-Stack CRM Development Rules
+
+## 🏗️ **Project Architecture**
+
+### **Technology Stack**
+- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS
+- **Backend**: Node.js + Express + TypeScript + Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: JWT (Access + Refresh tokens)
+- **Testing**: Jest + Supertest (Backend), React Testing Library (Frontend)
+- **Deployment**: Render (Backend), Vercel (Frontend)
+
+### **Project Structure**
+```
+CRM/
+├── frontend/          # React frontend application
+├── backend/           # Node.js backend API
+├── docs/             # Documentation
+└── migrations/       # Database migrations
+```
+
+## 🎯 **Frontend Development Rules**
+
+### **Component Architecture**
+- Use **functional components** with hooks
+- Implement **role-based access control** (RBAC)
+- Follow **atomic design** principles
+- Use **TypeScript interfaces** for all props and state
+- Implement **error boundaries** for error handling
+
+### **State Management**
+- Use **React Context** for global state (Auth, Theme)
+- Use **local state** for component-specific data
+- Implement **optimistic updates** for better UX
+- Use **React Query** patterns for server state
+
+### **Styling Guidelines**
+- Use **Tailwind CSS** utility classes
+- Follow **mobile-first** responsive design
+- Implement **dark mode** support
+- Use **consistent spacing** (4px grid system)
+- Apply **semantic color naming**
+
+### **Form Handling**
+- Use **React Hook Form** for form management
+- Implement **real-time validation**
+- Show **field-specific error messages**
+- Use **controlled components** for complex forms
+- Implement **form persistence** for long forms
+
+### **API Integration**
+- Use **axios interceptors** for request/response handling
+- Implement **automatic token refresh**
+- Handle **loading states** and **error states**
+- Use **typed API responses**
+- Implement **request caching** where appropriate
+
+### **Performance Optimization**
+- Use **React.memo** for expensive components
+- Implement **lazy loading** for routes
+- Use **useCallback** and **useMemo** judiciously
+- Optimize **bundle size** with code splitting
+- Implement **virtual scrolling** for large lists
+
+## 🔧 **Backend Development Rules**
+
+### **API Design**
+- Follow **RESTful conventions**
+- Use **consistent HTTP status codes**
+- Implement **proper error handling**
+- Use **semantic URL naming**
+- Version APIs appropriately
+
+### **Authentication & Authorization**
+- Use **JWT tokens** for authentication
+- Implement **refresh token rotation**
+- Apply **role-based middleware**
+- Validate **user permissions** on each request
+- Use **secure session management**
+
+### **Database Design**
+- Use **Prisma ORM** for database operations
+- Implement **proper relationships**
+- Use **database migrations** for schema changes
+- Apply **data validation** at the database level
+- Implement **soft deletes** where appropriate
+
+### **Validation & Security**
+- Use **express-validator** for input validation
+- Implement **rate limiting** on sensitive endpoints
+- Apply **CORS** configuration properly
+- Use **helmet** for security headers
+- Sanitize **user inputs** thoroughly
+
+### **Error Handling**
+- Use **centralized error handling**
+- Log **errors appropriately**
+- Return **consistent error responses**
+- Implement **graceful degradation**
+- Use **custom error classes**
+
+### **Testing Strategy**
+- Write **unit tests** for business logic
+- Implement **integration tests** for APIs
+- Use **mocking** for external dependencies
+- Test **authentication flows**
+- Maintain **high test coverage**
+
+## 📊 **Data Management**
+
+### **Database Schema**
+```sql
+-- Core entities with proper relationships
+User (id, email, name, role, password_hash)
+Customer (id, name, email, phone, company, owner_id)
+Lead (id, customer_id, stage_id, value, source)
+Task (id, user_id, customer_id, lead_id, title, description, due_date, completed)
+Contact (id, customer_id, user_id, type, summary, contact_date)
+```
+
+### **Data Validation Rules**
+- **Email**: Must be valid format and unique
+- **Password**: Minimum 8 characters, complexity requirements
+- **Phone**: International format support
+- **Dates**: ISO8601 format, future dates for due dates
+- **Required Fields**: Proper null/undefined handling
+
+### **Data Relationships**
+- **One-to-Many**: User → Customers, User → Tasks
+- **Many-to-One**: Tasks → Customer, Tasks → Lead
+- **Optional Relationships**: Tasks → Lead (nullable)
+- **Cascading Deletes**: Proper foreign key constraints
+
+## 🔐 **Security Guidelines**
+
+### **Authentication**
+- **Password Hashing**: Use bcrypt with salt rounds 12
+- **JWT Secrets**: Use strong, unique secrets
+- **Token Expiration**: 15min access, 7 days refresh
+- **Refresh Token Rotation**: Implement on each use
+- **Logout**: Invalidate refresh tokens
+
+### **Authorization**
+- **Role-Based Access**: user, manager, admin
+- **Resource Ownership**: Users can only access their own data
+- **Admin Override**: Admins can access all data
+- **Permission Checks**: Validate on every request
+- **Audit Logging**: Log sensitive operations
+
+### **Input Validation**
+- **Sanitization**: Remove dangerous characters
+- **Type Checking**: Validate data types
+- **Length Limits**: Prevent buffer overflow
+- **SQL Injection**: Use parameterized queries
+- **XSS Prevention**: Escape user content
+
+## 🧪 **Testing Standards**
+
+### **Frontend Testing**
+```typescript
+// Component testing with React Testing Library
+import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+describe('Component', () => {
+  it('should render correctly', () => {
+    render(<Component />);
+    expect(screen.getByText('Expected Text')).toBeInTheDocument();
+  });
+});
+```
+
+### **Backend Testing**
+```typescript
+// API testing with Supertest
+import request from 'supertest';
+import app from '../src/index';
+
+describe('API Endpoint', () => {
+  it('should return 200 for valid request', async () => {
+    const response = await request(app)
+      .post('/api/endpoint')
+      .send({ data: 'test' });
+    expect(response.status).toBe(200);
+  });
+});
+```
+
+### **Test Coverage Requirements**
+- **Unit Tests**: 80% minimum coverage
+- **Integration Tests**: All API endpoints
+- **E2E Tests**: Critical user flows
+- **Performance Tests**: Load testing for APIs
+
+## 🚀 **Deployment Guidelines**
+
+### **Environment Configuration**
+```env
+# Backend Environment Variables
+DATABASE_URL=postgresql://user:pass@host:port/db
+JWT_SECRET=your-super-secret-jwt-key
+JWT_REFRESH_SECRET=your-super-secret-refresh-jwt-key
+NODE_ENV=production
+CORS_ORIGIN=https://your-frontend-domain.com
+```
+
+### **Build Process**
+- **Frontend**: Vite build with optimization
+- **Backend**: TypeScript compilation
+- **Database**: Migration deployment
+- **Health Checks**: Implement for monitoring
+
+### **Monitoring & Logging**
+- **Error Tracking**: Implement error monitoring
+- **Performance Monitoring**: Track response times
+- **Database Monitoring**: Query performance
+- **User Analytics**: Track usage patterns
+
+## 📝 **Code Quality Standards**
+
+### **TypeScript Guidelines**
+- **Strict Mode**: Enable all strict options
+- **Type Definitions**: Define interfaces for all data
+- **Generic Types**: Use where appropriate
+- **Type Guards**: Implement for runtime type checking
+- **No Any Types**: Avoid unless absolutely necessary
+
+### **Code Style**
+- **ESLint**: Use strict configuration
+- **Prettier**: Consistent formatting
+- **Import Order**: Group imports logically
+- **Naming Conventions**: camelCase for variables, PascalCase for components
+- **Comments**: Document complex logic
+
+### **Git Workflow**
+- **Branch Naming**: feature/, bugfix/, hotfix/
+- **Commit Messages**: Conventional commits
+- **Pull Requests**: Require code review
+- **Merge Strategy**: Squash and merge
+- **Version Tags**: Semantic versioning
+
+## 🔄 **Development Workflow**
+
+### **Local Development**
+1. **Setup**: Clone repo, install dependencies
+2. **Database**: Run migrations and seed data
+3. **Environment**: Configure .env files
+4. **Start**: Run frontend and backend concurrently
+5. **Testing**: Run test suites before commits
+
+### **Feature Development**
+1. **Branch**: Create feature branch
+2. **Develop**: Implement feature with tests
+3. **Test**: Run all test suites
+4. **Review**: Self-review code changes
+5. **PR**: Create pull request with description
+
+### **Code Review Checklist**
+- [ ] **Functionality**: Feature works as expected
+- [ ] **Tests**: Adequate test coverage
+- [ ] **Security**: No security vulnerabilities
+- [ ] **Performance**: No performance regressions
+- [ ] **Documentation**: Code is well-documented
+
+## 🎨 **UI/UX Guidelines**
+
+### **Design System**
+- **Color Palette**: Consistent brand colors
+- **Typography**: Clear hierarchy with readable fonts
+- **Spacing**: 4px grid system throughout
+- **Components**: Reusable, accessible components
+- **Icons**: Consistent icon library usage
+
+### **Accessibility**
+- **WCAG 2.1**: AA compliance
+- **Keyboard Navigation**: Full keyboard support
+- **Screen Readers**: Proper ARIA labels
+- **Color Contrast**: Minimum 4.5:1 ratio
+- **Focus Management**: Visible focus indicators
+
+### **Responsive Design**
+- **Mobile First**: Design for mobile first
+- **Breakpoints**: Consistent breakpoint system
+- **Touch Targets**: Minimum 44px touch targets
+- **Loading States**: Skeleton screens for better UX
+- **Error States**: Clear error messaging
+
+## 📚 **Documentation Standards**
+
+### **Code Documentation**
+- **JSDoc**: Document all functions and classes
+- **README**: Comprehensive project setup
+- **API Docs**: OpenAPI/Swagger documentation
+- **Component Docs**: Storybook for UI components
+- **Architecture**: Document system design decisions
+
+### **User Documentation**
+- **User Guide**: Step-by-step instructions
+- **Admin Guide**: Administrative tasks
+- **API Reference**: Complete API documentation
+- **Troubleshooting**: Common issues and solutions
+- **Video Tutorials**: Screen recordings for complex tasks
+
+## 🔧 **Performance Guidelines**
+
+### **Frontend Performance**
+- **Bundle Size**: Keep under 500KB gzipped
+- **Lazy Loading**: Implement for routes and components
+- **Image Optimization**: Use WebP format with fallbacks
+- **Caching**: Implement proper caching strategies
+- **Code Splitting**: Split by routes and features
+
+### **Backend Performance**
+- **Database Queries**: Optimize with proper indexing
+- **Caching**: Implement Redis for frequently accessed data
+- **Rate Limiting**: Prevent abuse and ensure fair usage
+- **Connection Pooling**: Optimize database connections
+- **Compression**: Enable gzip compression
+
+## 🛡️ **Error Handling**
+
+### **Frontend Error Handling**
+```typescript
+// Global error boundary
+class ErrorBoundary extends React.Component {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log error to monitoring service
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+}
+```
+
+### **Backend Error Handling**
+```typescript
+// Centralized error handler
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error('Unhandled error:', error);
+  res.status(500).json({ error: 'Internal server error' });
+});
+```
+
+## 📊 **Monitoring & Analytics**
+
+### **Application Monitoring**
+- **Error Tracking**: Sentry or similar service
+- **Performance Monitoring**: Track response times
+- **User Analytics**: Track user behavior
+- **Database Monitoring**: Query performance
+- **Uptime Monitoring**: Service availability
+
+### **Logging Strategy**
+- **Structured Logging**: JSON format for machine readability
+- **Log Levels**: ERROR, WARN, INFO, DEBUG
+- **Log Rotation**: Prevent log file bloat
+- **Sensitive Data**: Never log passwords or tokens
+- **Audit Logs**: Track important user actions
+
+---
+
+## 🎯 **Quick Reference**
+
+### **Common Commands**
+```bash
+# Frontend
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run test         # Run tests
+npm run lint         # Lint code
+
+# Backend
+npm run dev          # Start development server
+npm run build        # Build TypeScript
+npm run test         # Run tests
+npm run db:migrate   # Run database migrations
+npm run db:seed      # Seed database
+```
+
+### **File Naming Conventions**
+- **Components**: PascalCase (UserProfile.tsx)
+- **Hooks**: camelCase with 'use' prefix (useAuth.ts)
+- **Services**: PascalCase (UserService.ts)
+- **Types**: PascalCase (User.ts)
+- **Constants**: UPPER_SNAKE_CASE (API_ENDPOINTS.ts)
+
+### **Git Commit Convention**
+```
+feat: add user authentication
+fix: resolve task completion bug
+docs: update API documentation
+style: format code with prettier
+refactor: improve error handling
+test: add unit tests for user service
+chore: update dependencies
+```
+
+This comprehensive guide ensures consistent, high-quality development across the full-stack CRM application.
+description:
+globs:
+alwaysApply: false
+---

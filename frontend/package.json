@@ -1,0 +1,71 @@
+{
+  "name": "crm-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "type-check": "tsc --noEmit",
+    "analyze": "vite-bundle-analyzer",
+    "performance:test": "npm run build && lighthouse http://localhost:4173 --output=json --output-path=./lighthouse-report.json",
+    "performance:audit": "npm run build && npm run preview & sleep 5 && lighthouse http://localhost:4173 --chrome-flags='--headless' --output=html --output-path=./lighthouse-report.html"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.11.2",
+    "axios": "^1.4.0",
+    "jwt-decode": "^3.1.2",
+    "react-hook-form": "^7.44.3",
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.18",
+    "clsx": "^1.2.1",
+    "tailwind-merge": "^1.13.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.27",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vitest": "^0.34.1",
+    "@vitest/ui": "^0.34.1",
+    "@vitest/coverage-v8": "^0.34.1",
+    "jsdom": "^22.1.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/user-event": "^14.4.3",
+    "vite-bundle-analyzer": "^0.7.0",
+    "lighthouse": "^11.2.0",
+    "web-vitals": "^3.4.0",
+    "workbox-webpack-plugin": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "crm",
+    "react",
+    "typescript",
+    "vite",
+    "tailwindcss"
+  ],
+  "author": "CRM Team",
+  "license": "MIT"
+}
