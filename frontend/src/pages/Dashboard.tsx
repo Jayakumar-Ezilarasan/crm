@@ -3,15 +3,15 @@ import Dashboard from '../components/ui/Dashboard';
 import { DashboardService, DashboardStats } from '../services/dashboardService';
 
 const DashboardPage: React.FC = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [stats, setStats] = useState<DashboardStats | undefined>(undefined);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        setError(null);
+        setError(undefined);
         const data = await DashboardService.getStats();
         setStats(data);
       } catch (err: any) {

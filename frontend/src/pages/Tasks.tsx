@@ -1,11 +1,45 @@
 import React, { useState, useEffect } from 'react';
+import { Task, Customer, Lead, User } from '../types/models';
 import { TaskService } from '../services/taskService';
 import { CustomerService } from '../services/customerService';
 import { LeadService } from '../services/leadService';
 import { UserService } from '../services/userService';
-import { Task, Customer, Lead, User } from '../types/models';
-import { useAuth } from '../contexts/AuthContext';
 import { DataTable } from '../components/ui/DataTable';
+import { useAuth } from '../contexts/AuthContext';
+
+// Interface for table data that includes JSX elements
+interface TaskTableData {
+  id: number;
+  userId: number;
+  customerId: number;
+  leadId?: number;
+  title: string;
+  description?: string;
+  dueDate: string;
+  completed: boolean;
+  status: React.ReactElement;
+  customerName: string;
+  leadName: string;
+  assignedTo: string;
+  dueDateElement: React.ReactElement;
+  actions: React.ReactElement | null;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  customer?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  lead?: {
+    id: number;
+    stage?: {
+      name: string;
+    };
+  };
+}
 
 const Tasks: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -234,12 +268,19 @@ const Tasks: React.FC = () => {
   };
 
   // Prepare data for DataTable with actions
-  const tableData = tasks.map(task => {
+  const tableData: TaskTableData[] = tasks.map(task => {
     const canEdit = canEditAll || (canEditOwn && task.userId === currentUserId);
     const canDelete = canDeleteAll || (canDeleteOwn && task.userId === currentUserId);
     
     return {
-      ...task,
+      id: task.id,
+      userId: task.userId,
+      customerId: task.customerId,
+      leadId: task.leadId,
+      title: task.title,
+      description: task.description,
+      dueDate: task.dueDate,
+      completed: task.completed,
       status: (
         <button
           onClick={() => handleToggleComplete(task.id, !task.completed)}
@@ -271,7 +312,7 @@ const Tasks: React.FC = () => {
       customerName: task.customer?.name || 'Unknown',
       leadName: getLeadDisplayName(task.leadId),
       assignedTo: task.user?.name || 'Unknown',
-      dueDate: (
+      dueDateElement: (
         <span className={new Date(task.dueDate) < new Date() && !task.completed ? 'text-red-600 font-semibold' : ''}>
           {new Date(task.dueDate).toLocaleDateString()}
         </span>
@@ -306,17 +347,20 @@ const Tasks: React.FC = () => {
           )}
         </div>
       ) : null,
+      user: task.user,
+      customer: task.customer,
+      lead: task.lead,
     };
   });
 
   const columns = [
-    { key: 'status' as keyof typeof tableData[0], label: 'Status', sortable: false },
-    { key: 'title' as keyof typeof tableData[0], label: 'Title', sortable: true },
-    { key: 'customerName' as keyof typeof tableData[0], label: 'Customer', sortable: true },
-    { key: 'leadName' as keyof typeof tableData[0], label: 'Lead', sortable: true },
-    { key: 'assignedTo' as keyof typeof tableData[0], label: 'Assigned To', sortable: true },
-    { key: 'dueDate' as keyof typeof tableData[0], label: 'Due Date', sortable: true },
-    ...(canEditAll ? [{ key: 'actions' as keyof typeof tableData[0], label: 'Actions', sortable: false }] : []),
+    { key: 'status' as keyof TaskTableData, label: 'Status', sortable: false },
+    { key: 'title' as keyof TaskTableData, label: 'Title', sortable: true },
+    { key: 'customerName' as keyof TaskTableData, label: 'Customer', sortable: true },
+    { key: 'leadName' as keyof TaskTableData, label: 'Lead', sortable: true },
+    { key: 'assignedTo' as keyof TaskTableData, label: 'Assigned To', sortable: true },
+    { key: 'dueDateElement' as keyof TaskTableData, label: 'Due Date', sortable: true },
+    ...(canEditAll ? [{ key: 'actions' as keyof TaskTableData, label: 'Actions', sortable: false }] : []),
   ];
 
   const handleRowClick = (task: Task) => {

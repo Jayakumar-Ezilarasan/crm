@@ -218,7 +218,7 @@ export function OptimizedDataTable<T extends Record<string, any>>({
       <table className="min-w-full divide-y divide-gray-200">
         <OptimizedTableHeader
           columns={columns}
-          sortKey={sortKey}
+          sortKey={String(sortKey)}
           sortAsc={sortAsc}
           onSort={handleSort}
         />

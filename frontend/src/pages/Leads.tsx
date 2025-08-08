@@ -71,6 +71,7 @@ const Leads: React.FC = () => {
         customerId: parseInt(addFormData.customer_id),
         stageId: parseInt(addFormData.stage_id),
         source: addFormData.source,
+        createdAt: new Date().toISOString(),
       });
       setAddFormData({ customer_id: '', stage_id: '', source: '', notes: '' });
       setShowAddModal(false);

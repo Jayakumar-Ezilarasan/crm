@@ -41,6 +41,8 @@ export interface Lead {
   stageId: number;
   value?: number;
   source?: string;
+  notes?: string;
+  createdAt: string;
   customer?: {
     id: number;
     name: string;
@@ -49,6 +51,11 @@ export interface Lead {
   stage?: {
     id: number;
     name: string;
+  };
+  owner?: {
+    id: number;
+    name: string;
+    email: string;
   };
 }
 

@@ -27,7 +27,7 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ tasks = [], loading, e
   const tasksByDay = useMemo(() => {
     const map: { [date: string]: Task[] } = {};
     for (const task of tasks) {
-      const day = new Date(task.due_date).toISOString().slice(0, 10);
+      const day = new Date(task.dueDate).toISOString().slice(0, 10);
       if (!map[day]) map[day] = [];
       map[day].push(task);
     }
