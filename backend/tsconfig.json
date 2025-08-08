@@ -25,30 +25,8 @@
     "noUncheckedIndexedAccess": true,
     "types": ["jest", "node"]
   },
-  "files": [
-    "src/index.ts",
-    "src/config/database.ts",
-    "src/config/security.ts",
-    "src/db.ts",
-    "src/middlewares/auth.ts",
-    "src/middlewares/cache.ts",
-    "src/middlewares/errorHandler.ts",
-    "src/middlewares/monitoring.ts",
-    "src/middlewares/security.ts",
-    "src/routes/admin.ts",
-    "src/routes/auth.ts",
-    "src/routes/customers.ts",
-    "src/routes/dashboard.ts",
-    "src/routes/interactions.ts",
-    "src/routes/leads.ts",
-    "src/routes/reports.ts",
-    "src/routes/tasks.ts",
-    "src/routes/users.ts",
-    "src/types/index.ts",
-    "src/utils/jwt.ts",
-    "src/utils/password.ts",
-    "src/utils/performanceMonitor.ts",
-    "src/utils/queryOptimizer.ts"
+  "include": [
+    "src"
   ],
   "exclude": [
     "node_modules",
