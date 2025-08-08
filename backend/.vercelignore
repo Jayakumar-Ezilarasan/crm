@@ -1,0 +1,36 @@
+# Prisma files (not needed for production)
+prisma/seed.ts
+prisma/migrations/
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+
+# Test files
+tests/
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+
+# Documentation
+*.md
+docs/
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build artifacts (will be generated)
+dist/
+build/
