@@ -8,6 +8,5 @@
   ],
   "env": {
     "VITE_API_URL": "https://your-backend-service.up.railway.app"
-  },
-  "domains": ["yourcrm.com", "www.yourcrm.com"]
+  }
 } 
