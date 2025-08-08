@@ -1,6 +1,7 @@
 # Prisma files (not needed for production)
 prisma/seed.ts
 prisma/migrations/
+prisma/schema.production.prisma
 
 # Development files
 .env
