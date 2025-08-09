@@ -86,6 +86,7 @@ The `render.yaml` file is already configured for your Express.js application wit
 The `Dockerfile` is optimized for Render deployment with:
 - Node.js 18 Alpine base image
 - Fixed npm install issues
+- Fixed TypeScript configuration paths
 - Security best practices (non-root user)
 - Health checks
 - Prisma client generation
@@ -135,16 +136,23 @@ Your API will be available at:
    - **Solution**: Use `npm install` instead of `npm ci`
    - **Fixed**: Dockerfile now uses `npm install`
 
-3. **Database Connection Issues**:
+3. **TypeScript Configuration Errors**:
+   - **Issue**: `No inputs were found in config file`
+   - **Solution**: Fixed `tsconfig.json` paths for Docker container
+   - **Fixed**: Changed `rootDir` from `./backend/src` to `./src`
+   - **Fixed**: Changed `include` from `["backend/src"]` to `["src"]`
+   - **Fixed**: Changed `exclude` from `["backend/prisma/seed.ts"]` to `["prisma"]`
+
+4. **Database Connection Issues**:
    - Verify `DATABASE_URL` is correct
    - Check database is accessible from Render
    - Ensure database is in the same region as your service
 
-4. **CORS Errors**:
+5. **CORS Errors**:
    - Update `CORS_ORIGIN` to match your frontend domain
    - Ensure frontend is making requests to correct backend URL
 
-5. **Service Timeouts**:
+6. **Service Timeouts**:
    - Check Render service logs
    - Optimize database queries
    - Consider upgrading to a higher plan
