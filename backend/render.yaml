@@ -2,14 +2,12 @@ services:
   - type: web
     name: crm-backend
     env: node
-    plan: free
-    buildCommand: npm install && npm run build
+    plan: starter
+    buildCommand: npm install && npm run build && npx prisma generate
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
@@ -17,6 +15,20 @@ services:
       - key: JWT_REFRESH_SECRET
         sync: false
       - key: CORS_ORIGIN
-        value: https://your-frontend-domain.onrender.com
-    healthCheckPath: /api/health
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: LOG_LEVEL
+        value: info
+      - key: ENABLE_MONITORING
+        value: true
+    healthCheckPath: /health
     autoDeploy: true 
