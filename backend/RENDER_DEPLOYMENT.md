@@ -150,6 +150,8 @@ Your API will be available at:
    - **Fixed**: Disabled `noUnusedLocals`, `noUnusedParameters`, `exactOptionalPropertyTypes`
    - **Fixed**: Updated environment variable access to use bracket notation
    - **Fixed**: Added proper error handling and return statements
+   - **Fixed**: Fixed middleware type signatures (ErrorRequestHandler vs RequestHandler)
+   - **Fixed**: Fixed performance monitor recordMetric method access
 
 5. **Database Connection Issues**:
    - Verify `DATABASE_URL` is correct

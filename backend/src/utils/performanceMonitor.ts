@@ -26,7 +26,8 @@ class PerformanceMonitor {
     res.send = function (body: any) {
       const responseTime = Date.now() - startTime;
       
-      this.recordMetric({
+      // Record metric using the performanceMonitor instance
+      performanceMonitor.recordMetric({
         endpoint: req.path,
         method: req.method,
         responseTime,
@@ -44,7 +45,7 @@ class PerformanceMonitor {
   };
 
   // Record performance metric
-  private recordMetric(metric: PerformanceMetrics) {
+  recordMetric(metric: PerformanceMetrics) {
     this.metrics.push(metric);
     
     // Keep only the last maxMetrics

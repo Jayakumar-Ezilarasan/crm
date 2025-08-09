@@ -1,4 +1,4 @@
-import { RequestHandler, Request, Response, NextFunction } from 'express';
+import { RequestHandler, ErrorRequestHandler, Request, Response, NextFunction } from 'express';
 
 // Simple request monitoring middleware
 export const monitoringMiddleware: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +17,7 @@ export const monitoringMiddleware: RequestHandler = (req: Request, res: Response
 };
 
 // Error monitoring middleware
-export const errorMonitoringMiddleware: RequestHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const errorMonitoringMiddleware: ErrorRequestHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(`${new Date().toISOString()} - ERROR: ${err.message}`);
   console.error(err.stack);
   
