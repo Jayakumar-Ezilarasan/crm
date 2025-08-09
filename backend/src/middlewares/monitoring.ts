@@ -29,7 +29,7 @@ export const errorMonitoringMiddleware: RequestHandler = (err: any, req: Request
     ip: req.ip,
     userAgent: req.get('User-Agent'),
     error: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    stack: process.env['NODE_ENV'] === 'development' ? err.stack : undefined
   };
   
   console.error('Error Details:', JSON.stringify(errorInfo, null, 2));

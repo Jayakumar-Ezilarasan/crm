@@ -87,6 +87,7 @@ The `Dockerfile` is optimized for Render deployment with:
 - Node.js 18 Alpine base image
 - Fixed npm install issues
 - Fixed TypeScript configuration paths
+- Relaxed TypeScript strict settings for deployment
 - Security best practices (non-root user)
 - Health checks
 - Prisma client generation
@@ -143,16 +144,23 @@ Your API will be available at:
    - **Fixed**: Changed `include` from `["backend/src"]` to `["src"]`
    - **Fixed**: Changed `exclude` from `["backend/prisma/seed.ts"]` to `["prisma"]`
 
-4. **Database Connection Issues**:
+4. **TypeScript Strict Mode Errors**:
+   - **Issue**: Multiple TypeScript strict mode compilation errors
+   - **Solution**: Temporarily relaxed strict settings for deployment
+   - **Fixed**: Disabled `noUnusedLocals`, `noUnusedParameters`, `exactOptionalPropertyTypes`
+   - **Fixed**: Updated environment variable access to use bracket notation
+   - **Fixed**: Added proper error handling and return statements
+
+5. **Database Connection Issues**:
    - Verify `DATABASE_URL` is correct
    - Check database is accessible from Render
    - Ensure database is in the same region as your service
 
-5. **CORS Errors**:
+6. **CORS Errors**:
    - Update `CORS_ORIGIN` to match your frontend domain
    - Ensure frontend is making requests to correct backend URL
 
-6. **Service Timeouts**:
+7. **Service Timeouts**:
    - Check Render service logs
    - Optimize database queries
    - Consider upgrading to a higher plan

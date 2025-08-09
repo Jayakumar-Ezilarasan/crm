@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 
@@ -21,7 +20,7 @@ import adminRoutes from './routes/admin';
 import { errorHandler } from './middlewares/errorHandler';
 import { authenticateJWT } from './middlewares/auth';
 import { securityHeaders, apiLimiter } from './middlewares/security';
-import { monitoringMiddleware, errorMonitoringMiddleware, performanceMiddleware } from './middlewares/monitoring';
+import { monitoringMiddleware, performanceMiddleware } from './middlewares/monitoring';
 
 // Load environment variables
 dotenv.config();
@@ -57,7 +56,7 @@ app.use(monitoringMiddleware);
 app.use(performanceMiddleware);
 
 // Health check endpoint for Render
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),

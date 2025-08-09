@@ -6,6 +6,6 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
   res.status(status).json({
     success: false,
     error: message,
-    details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    details: process.env['NODE_ENV'] === 'development' ? err.stack : undefined,
   });
 } 

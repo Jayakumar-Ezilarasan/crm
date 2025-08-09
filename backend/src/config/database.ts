@@ -2,23 +2,10 @@ import { PrismaClient } from '@prisma/client';
 
 // Database connection pooling configuration
 const prisma = new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+  log: process.env['NODE_ENV'] === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
   datasources: {
     db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
-  // Connection pooling configuration
-  __internal: {
-    engine: {
-      // Connection pool settings
-      connectionLimit: 10,
-      acquireTimeout: 60000,
-      timeout: 60000,
-      // Query optimization
-      queryTimeout: 30000,
-      // Enable query logging in development
-      logQueries: process.env.NODE_ENV === 'development',
+      url: process.env['DATABASE_URL'] || '',
     },
   },
 });
@@ -28,7 +15,7 @@ export const checkDatabaseHealth = async () => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     return { status: 'healthy', timestamp: new Date().toISOString() };
-  } catch (error) {
+  } catch (error: any) {
     return { status: 'unhealthy', error: error.message, timestamp: new Date().toISOString() };
   }
 };

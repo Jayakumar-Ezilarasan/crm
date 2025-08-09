@@ -46,7 +46,7 @@ export const cacheMiddleware = (duration: number = 300) => {
 
 // Cache invalidation middleware
 export const invalidateCache = (pattern: string) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (_req: Request, _res: Response, next: NextFunction) => {
     const keys = cache.keys();
     const matchingKeys = keys.filter(key => key.includes(pattern));
     
