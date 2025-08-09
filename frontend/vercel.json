@@ -30,6 +30,6 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://your-backend-service.up.railway.app"
+    "VITE_API_URL": "https://crm-nnzk.onrender.com"
   }
 } 
