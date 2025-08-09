@@ -5,7 +5,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Install dependencies for native modules and SSL libraries for Prisma
-RUN apk add --no-cache python3 make g++ openssl libssl1.1
+RUN apk add --no-cache python3 make g++ openssl libc6-compat
 
 # Copy package files
 COPY package*.json ./

@@ -157,19 +157,26 @@ Your API will be available at:
 5. **Prisma SSL Library Errors**:
    - **Issue**: `Error loading shared library libssl.so.1.1: No such file or directory`
    - **Solution**: Added SSL libraries to Dockerfile
-   - **Fixed**: Added `openssl libssl1.1` to Alpine package installation
+   - **Fixed**: Added `openssl libc6-compat` to Alpine package installation
    - **Alternative**: Use `Dockerfile.debian` for better SSL compatibility
+   - **Alternative**: Use `Dockerfile.alpine` for comprehensive Alpine setup
 
-6. **Database Connection Issues**:
+6. **Alpine Package Errors**:
+   - **Issue**: `libssl1.1 (no such package)`
+   - **Solution**: Use correct Alpine package names
+   - **Fixed**: Changed from `libssl1.1` to `libc6-compat`
+   - **Fixed**: Added `ca-certificates` for HTTPS support
+
+7. **Database Connection Issues**:
    - Verify `DATABASE_URL` is correct
    - Check database is accessible from Render
    - Ensure database is in the same region as your service
 
-7. **CORS Errors**:
+8. **CORS Errors**:
    - Update `CORS_ORIGIN` to match your frontend domain
    - Ensure frontend is making requests to correct backend URL
 
-8. **Service Timeouts**:
+9. **Service Timeouts**:
    - Check Render service logs
    - Optimize database queries
    - Consider upgrading to a higher plan

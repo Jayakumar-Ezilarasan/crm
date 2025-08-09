@@ -4,19 +4,26 @@ FROM node:18-alpine
 # Set working directory
 WORKDIR /app
 
-# Install curl for health checks and SSL libraries for Prisma
-RUN apk add --no-cache curl openssl libc6-compat
+# Install dependencies for native modules and SSL libraries for Prisma
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    curl \
+    openssl \
+    libc6-compat \
+    ca-certificates
 
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including dev dependencies for build)
+# Install dependencies (including dev dependencies for build)
 RUN npm install
 
 # Copy Prisma schema
 COPY prisma ./prisma/
 
-# Generate Prisma client
+# Generate Prisma client with proper SSL support
 RUN npx prisma generate
 
 # Copy source code and config files
@@ -26,8 +33,9 @@ COPY tsconfig.json ./
 # Build the application
 RUN npm run build
 
-# Remove development dependencies
-RUN npm prune --omit=dev
+# Remove development dependencies and clean up
+RUN npm prune --production && \
+    npm cache clean --force
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
