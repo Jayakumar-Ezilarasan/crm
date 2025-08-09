@@ -46,7 +46,7 @@ ENABLE_MONITORING=true
 
 ### 4. Deploy to Render
 
-#### Option A: Render Dashboard
+#### Option A: Render Dashboard (Recommended)
 1. Go to [render.com](https://render.com)
 2. Click "New +" and select "Web Service"
 3. Connect your Git repository
@@ -85,7 +85,7 @@ The `render.yaml` file is already configured for your Express.js application wit
 ### Dockerfile
 The `Dockerfile` is optimized for Render deployment with:
 - Node.js 18 Alpine base image
-- Multi-stage build for smaller image size
+- Fixed npm install issues
 - Security best practices (non-root user)
 - Health checks
 - Prisma client generation
@@ -130,16 +130,21 @@ Your API will be available at:
    - Ensure TypeScript compilation succeeds locally
    - Verify `tsconfig.json` excludes `prisma/` directory
 
-2. **Database Connection Issues**:
+2. **npm ci Errors**:
+   - **Issue**: `npm ci` requires package-lock.json
+   - **Solution**: Use `npm install` instead of `npm ci`
+   - **Fixed**: Dockerfile now uses `npm install`
+
+3. **Database Connection Issues**:
    - Verify `DATABASE_URL` is correct
    - Check database is accessible from Render
    - Ensure database is in the same region as your service
 
-3. **CORS Errors**:
+4. **CORS Errors**:
    - Update `CORS_ORIGIN` to match your frontend domain
    - Ensure frontend is making requests to correct backend URL
 
-4. **Service Timeouts**:
+5. **Service Timeouts**:
    - Check Render service logs
    - Optimize database queries
    - Consider upgrading to a higher plan
