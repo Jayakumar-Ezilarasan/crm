@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>CORS Test for CRM Backend</h1>
+    <p>This page tests if CORS is properly configured on your backend.</p>
+    
+    <button onclick="testCORS()">Test CORS</button>
+    <button onclick="testLogin()">Test Login Endpoint</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        const BACKEND_URL = 'https://crm-nnzk.onrender.com';
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.style.padding = '10px';
+            div.style.margin = '5px';
+            div.style.border = '1px solid #ccc';
+            div.style.borderRadius = '5px';
+            
+            if (type === 'error') {
+                div.style.backgroundColor = '#ffebee';
+                div.style.color = '#c62828';
+            } else if (type === 'success') {
+                div.style.backgroundColor = '#e8f5e8';
+                div.style.color = '#2e7d32';
+            }
+            
+            div.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${message}`;
+            results.appendChild(div);
+        }
+        
+        async function testCORS() {
+            try {
+                log('Testing CORS with /cors-test endpoint...');
+                
+                const response = await fetch(`${BACKEND_URL}/cors-test`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ CORS test successful! Response: ${JSON.stringify(data)}`, 'success');
+                } else {
+                    log(`❌ CORS test failed with status: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ CORS test error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLogin() {
+            try {
+                log('Testing CORS with /auth/login endpoint...');
+                
+                const response = await fetch(`${BACKEND_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'testpassword'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ Login endpoint CORS test successful! Response: ${JSON.stringify(data)}`, 'success');
+                } else {
+                    const data = await response.json();
+                    log(`⚠️ Login endpoint CORS test - expected auth failure but CORS working: ${JSON.stringify(data)}`, 'info');
+                }
+            } catch (error) {
+                log(`❌ Login endpoint CORS test error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test on page load
+        window.onload = function() {
+            log('Page loaded. Click buttons to test CORS configuration.');
+            log(`Backend URL: ${BACKEND_URL}`);
+        };
+    </script>
+</body>
+</html>

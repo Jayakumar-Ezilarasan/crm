@@ -36,14 +36,24 @@ app.use(securityHeaders);
 const limiter = apiLimiter;
 app.use(limiter);
 
-// CORS configuration - allow all origins for development/production flexibility
+// CORS configuration - allow specific origins for security
 const corsOptions = {
-  origin: true, // Allow all origins
+  origin: [
+    'https://crm-2sqn.vercel.app', // Vercel frontend
+    'http://localhost:5173', // Local development
+    'http://localhost:3000'  // Alternative local port
+  ],
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 };
+
+// Log CORS configuration for debugging
+console.log('CORS Configuration:', {
+  allowedOrigins: corsOptions.origin,
+  environment: process.env.NODE_ENV || 'development'
+});
 
 app.use(cors(corsOptions));
 
@@ -71,6 +81,15 @@ app.get('/health', (req, res) => {
     database: databaseUrl,
     port: process.env['PORT'] || 3001,
     nodeVersion: process.version
+  });
+});
+
+// CORS test endpoint
+app.get('/cors-test', (req, res) => {
+  res.status(200).json({
+    message: 'CORS is working!',
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
   });
 });
 

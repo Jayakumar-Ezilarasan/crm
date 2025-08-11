@@ -24,17 +24,22 @@
 
 **Problem**: `Access to XMLHttpRequest has been blocked by CORS policy`
 
-**Solution**: Updated CORS configuration to allow all origins for maximum flexibility
+**Solution**: Updated CORS configuration to allow specific origins for security
 
 **Files Updated**:
-- `backend/src/index.ts`: Configured CORS to allow all origins
+- `backend/src/index.ts`: Configured CORS to allow specific origins
+- `backend/src/config/security.ts`: Updated security configuration
 - `backend/RENDER_DEPLOYMENT.md`: Updated documentation
 
 **New CORS Configuration**:
 ```typescript
-// CORS configuration - allow all origins for development/production flexibility
+// CORS configuration - allow specific origins for security
 const corsOptions = {
-  origin: true, // Allow all origins
+  origin: [
+    'https://crm-2sqn.vercel.app', // Vercel frontend
+    'http://localhost:5173', // Local development
+    'http://localhost:3000'  // Alternative local port
+  ],
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -43,6 +48,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 ```
+
+**Note**: No `CORS_ORIGIN` environment variable is required since CORS is now configured to allow specific origins for security.
 
 ### 3. Backend Service Issues ⚠️
 
@@ -83,7 +90,7 @@ NODE_ENV="production"
 - ✅ Frontend deployed at `https://crm-2sqn.vercel.app/`
 
 ### Step 2: Backend CORS (Already Done)
-- ✅ CORS configured to allow all origins
+- ✅ CORS configured to allow specific origins for security
 - ✅ No environment variables needed for CORS
 
 ### Step 3: Verify Backend Health
@@ -106,14 +113,14 @@ NODE_ENV="production"
 ## Current Status
 
 - ✅ **Frontend**: Deployed at `https://crm-2sqn.vercel.app/`
-- ✅ **Backend**: CORS configured to allow all origins
-- ✅ **CORS Issues**: Resolved - all origins are now allowed
+- ✅ **Backend**: CORS configured to allow specific origins for security
+- ✅ **CORS Issues**: Resolved - Vercel frontend origin is now allowed
 - ⚠️ **Pending**: Verify backend is running and healthy
 
 ## Testing Checklist
 
 - [ ] Backend health check passes: `https://crm-nnzk.onrender.com/health`
-- [ ] Frontend can make requests to backend from any origin
+- [ ] Frontend can make requests to backend from Vercel domain
 - [ ] Login functionality works
 - [ ] No console errors
 
@@ -124,7 +131,7 @@ NODE_ENV="production"
 curl https://crm-nnzk.onrender.com/health
 ```
 
-### Test CORS (Should work from any origin now)
+### Test CORS (Should work from Vercel origin now)
 ```bash
 curl -H "Origin: https://crm-2sqn.vercel.app" \
      -H "Access-Control-Request-Method: POST" \
