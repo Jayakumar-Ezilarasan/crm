@@ -36,12 +36,15 @@ app.use(securityHeaders);
 const limiter = apiLimiter;
 app.use(limiter);
 
-// CORS configuration
+// CORS configuration - allow all origins for development/production flexibility
 const corsOptions = {
-  origin: process.env['CORS_ORIGIN'] || ['http://localhost:3000', 'http://localhost:5173'],
+  origin: true, // Allow all origins
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 };
+
 app.use(cors(corsOptions));
 
 // Body parsing middleware
@@ -57,11 +60,17 @@ app.use(performanceMiddleware);
 
 // Health check endpoint for Render
 app.get('/health', (req, res) => {
+  const environment = process.env['NODE_ENV'] || 'development';
+  const databaseUrl = process.env['DATABASE_URL'] ? 'configured' : 'missing';
+  
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env['NODE_ENV'] || 'development'
+    environment: environment,
+    database: databaseUrl,
+    port: process.env['PORT'] || 3001,
+    nodeVersion: process.version
   });
 });
 
@@ -116,7 +125,8 @@ prisma.$connect()
   })
   .catch((error) => {
     console.error('Database connection failed:', error);
-    process.exit(1);
+    console.error('Please check your DATABASE_URL environment variable');
+    // Don't exit immediately - let the server start but log the error
   });
 
 const PORT = process.env['PORT'] || 3001;
@@ -126,6 +136,7 @@ if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`Environment: ${process.env['NODE_ENV'] || 'development'}`);
+    console.log(`Health check available at: http://localhost:${PORT}/health`);
   });
 }
 

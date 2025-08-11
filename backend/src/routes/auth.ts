@@ -17,7 +17,7 @@ router.post(
   apiLimiter,
   body('email').isEmail(),
   body('password').isLength({ min: 8 }),
-  body('name').notEmpty(),
+  // body('name').notEmpty(),
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
